@@ -146,3 +146,40 @@ Report Summary:
 
 Logs saved to: scan_results.log and internal_scan.log
 ```
+
+```bash
+NetMac - Advanced Network Monitoring and Pentesting CLI Tool
+
+Starting covert scan on IP range: 8.8.8.8/32
+-----------------------------------------------------
+Technique: Covert Channel Scan
+Randomizing traffic: Enabled
+Stealth Mode: Enabled
+Spoofing IP: 192.168.100.10
+
+[INFO] Performing covert channel scan...
+[INFO] Sending disguised UDP packets with covert data to 8.8.8.8...
+[INFO] Legitimate DNS queries generated for camouflage...
+[INFO] Response received from port 53 - DNS service detected.
+[INFO] No response from other ports - possibly filtered or closed.
+[INFO] Covert channel scan completed without detection.
+
+Scan completed for 8.8.8.8
+-----------------------------------------------------
+
+Starting bad TCP checksum scan on IP range: 192.168.10.1/32
+-----------------------------------------------------
+Technique: Bad TCP Checksum Scan
+Randomizing traffic: Disabled
+Legitimate Traffic: Enabled
+Spoofing IP: 192.168.100.10
+
+[INFO] Performing bad TCP checksum scan...
+[INFO] Response received from 192.168.10.1 on port 80 - HTTP service detected.
+[INFO] No response from port 22, possibly filtered or closed.
+[INFO] Scan completed for 192.168.10.1
+
+Report Summary:
+- 8.8.8.8: DNS service detected on port 53. No response from other ports.
+- 192.168.10.1: HTTP service detected on port 80. No response from port 22.
+```
