@@ -99,93 +99,113 @@ NetMonX is designed to be highly customizable, allowing users to tailor its func
 
 NetMonX is essential for anyone serious about maintaining robust network security, conducting thorough penetration tests, or studying advanced network behaviors. It’s a tool that not only helps identify vulnerabilities but also enables proactive defense strategies, ensuring that your network remains secure against sophisticated threats.
 
-## Output
-```bash
-NetMonX - Advanced Network Monitoring and Security Tool
-
-Starting scan on target: 8.8.8.8 (Google DNS)
------------------------------------------------------
-Technique: Covert Channel Scan
-Randomizing traffic: Enabled
-Stealth Mode: Enabled
-
-[INFO] Sending disguised UDP packets with covert data to 8.8.8.8...
-[INFO] Legitimate DNS queries generated for camouflage...
-[INFO] Response received from port 53 - DNS service detected.
-[INFO] No response from other ports - possibly filtered or closed.
-[INFO] Covert channel scan completed without detection.
-
-Scan completed for 8.8.8.8 (Google DNS)
------------------------------------------------------
-
-Starting scan on target: 192.168.10.1
------------------------------------------------------
-Technique: Bad TCP Checksum Scan
-Randomizing traffic: Disabled
-Legitimate Traffic: Enabled
-
-[INFO] Sending malformed TCP packets with bad checksum to 192.168.10.1...
-[INFO] Legitimate HTTP traffic generated to blend with the network...
-[INFO] Response received from port 80 - HTTP service detected.
-[INFO] No response from port 22 - possibly filtered or closed.
-[INFO] Potential anomaly detected: Unusual IP behavior, further investigation recommended.
-
-Scan completed for 192.168.10.1
------------------------------------------------------
-
-Report Summary:
-- 8.8.8.8 (Google DNS): 
-  - Detected active DNS service on port 53.
-  - No response from other ports, indicating strong filtering or closed ports.
-  - Covert channel scan successfully evaded detection.
-
-- 192.168.10.1:
-  - Detected active HTTP service on port 80.
-  - No response from port 22 (SSH), possibly filtered or closed.
-  - Detected potential anomaly related to unusual IP behavior.
-
-Logs saved to: scan_results.log and internal_scan.log
-```
-
-```bash
-NetMac - Advanced Network Monitoring and Pentesting CLI Tool
-
-Starting covert scan on IP range: 8.8.8.8/32
------------------------------------------------------
-Technique: Covert Channel Scan
-Randomizing traffic: Enabled
-Stealth Mode: Enabled
-Spoofing IP: 192.168.100.10
-
-[INFO] Performing covert channel scan...
-[INFO] Sending disguised UDP packets with covert data to 8.8.8.8...
-[INFO] Legitimate DNS queries generated for camouflage...
-[INFO] Response received from port 53 - DNS service detected.
-[INFO] No response from other ports - possibly filtered or closed.
-[INFO] Covert channel scan completed without detection.
-
-Scan completed for 8.8.8.8
------------------------------------------------------
-
-Starting bad TCP checksum scan on IP range: 192.168.10.1/32
------------------------------------------------------
-Technique: Bad TCP Checksum Scan
-Randomizing traffic: Disabled
-Legitimate Traffic: Enabled
-Spoofing IP: 192.168.100.10
-
-[INFO] Performing bad TCP checksum scan...
-[INFO] Response received from 192.168.10.1 on port 80 - HTTP service detected.
-[INFO] No response from port 22, possibly filtered or closed.
-[INFO] Scan completed for 192.168.10.1
-
-Report Summary:
-- 8.8.8.8: DNS service detected on port 53. No response from other ports.
-- 192.168.10.1: HTTP service detected on port 80. No response from port 22.
-```
 ## Usages
-# Scan sample
-- sudo python NetMonX.py monitor start --mac --record-new
 
-# Advance sample
-- sudo python NetMonX.py scan start --ip-range 192.168.1.0/24 --technique inverse --stealth --spoof-ip 192.168.1.100
+```bash
+General Command Structure
+
+1. Monitoring MAC Addresses
+
+Real-Time Monitoring with Wireless MAC Address Recording
+python NetMonX.py monitor start --mac --wireless --record-new
+
+Only Monitor Wireless MAC Addresses
+python NetMonX.py monitor start --wireless
+
+2. Security Features
+Enable Rogue Device Detection and Anomaly Detection
+python NetMonX.py security protect --rogue-detection --anomaly-detection
+
+Enable Stealth Mode for Monitoring
+python NetMonX.py security protect --stealth
+
+3. Advanced and Stealthy Scanning
+Perform an Inverse Scan with IP Spoofing, Fragmentation, and Stealth Techniques
+python NetMonX.py scan start --ip-range 192.168.1.0/24 --technique inverse --spoof-ip 192.168.1.100 --fragment --stealth --randomize --legit-traffic
+
+Perform a Bad TCP Checksum Scan with Fragmentation and Legitimate Traffic
+python NetMonX.py scan start --ip-range 192.168.1.0/24 --technique bad-tcp --fragment --legit-traffic --randomize
+
+Perform a Covert Channel Scan with Protocol Obfuscation
+python NetMonX.py scan start --ip-range 192.168.1.0/24 --technique covert --stealth --fragment --spoof-ip 192.168.1.200
+
+Perform an ACK Tunneling Scan with Randomized TTL
+python NetMonX.py scan start --ip-range 192.168.1.0/24 --technique ack-tunneling --randomized-ttl --fragment --stealth
+
+4. Alerts and Notifications
+Configure Email and SMS Alerts
+python NetMonX.py alerts configure --email your_email@example.com --sms +1234567890
+
+5. Reporting
+Generate a Report for Specific Date Range
+python NetMonX.py report generate --start-date 2024-08-01 --end-date 2024-08-10 --output report.txt
+
+6. Device Identification
+Identify Device by MAC Address
+python NetMonX.py device identify --mac AA:BB:CC:DD:EE:FF
+
+7. Database Management
+Initialize the MAC Address Database
+python NetMonX.py db manage --init
+
+Add Monitoring Data to the Database
+python NetMonX.py db manage --add-data
+
+8. Advanced Network Features
+Enable Deep Packet Inspection and Anomaly Detection
+python NetMonX.py advanced features --dpi --anomaly-detection
+
+Explanation of Key Options:
+--fragment: Fragments packets to bypass detection by some firewalls and IDS/IPS systems.
+--spoof-ip: Spoofs the source IP address to avoid detection or attribution.
+--stealth: Activates enhanced stealth techniques, modifying packet headers and timing to evade detection.
+--randomize: Randomizes the timing of packet sends to avoid detection by timing analysis.
+--legit-traffic: Generates legitimate traffic to blend in with normal network activity, making the scan less suspicious.
+--randomized-ttl: Randomizes the Time-To-Live (TTL) value to evade detection by systems monitoring for unusual TTL values.
+
+Practical Scenarios:
+
+Bypassing an Advanced Firewall (e.g., Palo Alto PA-220)
+- The use of IP spoofing, fragmentation, and stealth techniques can help evade DPI and anomaly detection features of high-end firewalls.
+python NetMonX.py scan start --ip-range 10.0.0.0/24 --technique syn-ack --spoof-ip 10.0.0.100 --fragment --stealth --randomize
+
+Evading IDS/IPS Systems (e.g., Snort, Suricata)
+- Combining techniques like covert channel scanning, ACK tunneling, and randomized TTL can help bypass signature-based detection and heuristic analysis.
+
+python NetMonX.py scan start --ip-range 172.16.0.0/24 --technique covert --spoof-ip 172.16.0.200 --fragment --randomize --legit-traffic --stealth
+Evading Endpoint Protections (e.g., Linux Ubuntu 20.04, macOS Big Sur)
+
+Advanced packet crafting, such as TCP timestamp manipulation and bad TCP checksum scans, combined with protocol obfuscation, can be used to bypass host-based defenses.
+python NetMonX.py scan start --ip-range 192.168.1.0/24 --technique tcp-timestamp --frag
+```
+
+## Output/Practical Cases
+```bash
+
+1. Snort (Configured and Managed Version)
+python NetMonX.py scan start --ip-range 172.16.0.0/24 --technique covert --spoof-ip 172.16.0.200 --fragment --randomize --legit-traffic --stealth
+
+2024-08-10 15:30:12 - INFO - Starting covert scan on IP range: 172.16.0.0/24
+2024-08-10 15:30:12 - INFO - Spoofing IP: 172.16.0.200
+2024-08-10 15:30:12 - INFO - Sending disguised UDP packets with covert data to 172.16.0.1...
+2024-08-10 15:30:12 - INFO - Legitimate DNS queries generated for camouflage...
+2024-08-10 15:30:14 - INFO - No response from 172.16.0.1 - possibly filtered or closed.
+2024-08-10 15:30:16 - INFO - Sending disguised UDP packets with covert data to 172.16.0.2...
+2024-08-10 15:30:16 - INFO - Legitimate DNS queries generated for camouflage...
+2024-08-10 15:30:18 - INFO - No response from 172.16.0.2 - possibly filtered or closed.
+2024-08-10 15:30:20 - INFO - Covert channel scan completed without detection.
+2024-08-10 15:30:20 - INFO - Snort system evasion successful, no alerts triggered.
+
+2. Palo Alto PA-220
+python NetMonX.py scan start --ip-range 10.0.0.0/24 --technique syn-ack --spoof-ip 10.0.0.100 --fragment --stealth --randomize
+
+2024-08-10 15:45:30 - INFO - Starting SYN+ACK scan on IP range: 10.0.0.0/24
+2024-08-10 15:45:30 - INFO - Spoofing IP: 10.0.0.100
+2024-08-10 15:45:31 - INFO - Fragmenting packets to evade detection...
+2024-08-10 15:45:31 - INFO - Sending SYN+ACK packet to 10.0.0.1 with randomized TTL and sequence number...
+2024-08-10 15:45:33 - INFO - No response from 10.0.0.1 - possibly firewalled.
+2024-08-10 15:45:34 - INFO - Sending SYN+ACK packet to 10.0.0.2 with randomized TTL and sequence number...
+2024-08-10 15:45:36 - INFO - No response from 10.0.0.2 - possibly firewalled.
+2024-08-10 15:45:37 - INFO - SYN+ACK scan completed with stealth and fragmentation.
+2024-08-10 15:45:37 - INFO - Palo Alto firewall evasion successful, no DPI alerts triggered.
+```
