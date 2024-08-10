@@ -99,6 +99,36 @@ NetMonX is designed to be highly customizable, allowing users to tailor its func
 
 NetMonX is essential for anyone serious about maintaining robust network security, conducting thorough penetration tests, or studying advanced network behaviors. It’s a tool that not only helps identify vulnerabilities but also enables proactive defense strategies, ensuring that your network remains secure against sophisticated threats.
 
+## Advantages for Pentester/Attacker:
+
+# Confuse Channel:
+- Evades detection by exploiting unmonitored channel hopping.
+- Example Vendors/Models: Cisco Aironet 2800 Series, Aruba Instant APs (e.g., IAP-305).
+
+# Smuggle Data (ICMP):
+- Can discreetly transport data through less scrutinized ICMP traffic.
+- Example Vendors/Models: Palo Alto Networks PA-Series Firewalls, Fortinet FortiGate 60F.
+
+# Tunnel Data (DNS):
+- Effective for covert communication using DNS queries.
+- Example Vendors/Models: Cisco Umbrella, Infoblox DNS Security.
+
+# Wrap Protocol (HTTP):
+- Can bypass basic systems by hiding data within HTTP requests.
+- Example Vendors/Models: F5 Networks BIG-IP, Imperva Incapsula.
+
+# Fragment Data:
+- Potentially avoids detection through fragmented packets.
+- Example Vendors/Models: Check Point R81, Juniper SRX Series.
+
+# Steganography:
+- Conceals data within other files or protocols, evading simpler systems.
+- Example Tools: OpenStego, Steghide.
+
+# Disguise Traffic:
+- Converts traffic between OSI layers to obscure its nature.
+- Example Vendors/Models: Radware AppWall, Sophos XG Firewall.
+
 ## Usages
 
 ```bash
