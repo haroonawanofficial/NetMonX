@@ -100,7 +100,7 @@ NetMac is designed to be highly customizable, allowing users to tailor its funct
 NetMac is essential for anyone serious about maintaining robust network security, conducting thorough penetration tests, or studying advanced network behaviors. It’s a tool that not only helps identify vulnerabilities but also enables proactive defense strategies, ensuring that your network remains secure against sophisticated threats.
 
 ## Output
-‘‘‘bash
+```bash
 NetMac - Advanced Network Monitoring and Security Tool
 
 Starting scan on target: 8.8.8.8 (Google DNS)
@@ -145,4 +145,4 @@ Report Summary:
   - Detected potential anomaly related to unusual IP behavior.
 
 Logs saved to: scan_results.log and internal_scan.log
-‘‘‘
+```
