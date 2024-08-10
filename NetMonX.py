@@ -25,7 +25,7 @@ if os.path.exists(MAC_DATABASE_FILE):
 
 @click.group()
 def cli():
-    """NetMonX - Advanced Network Monitoring and Pentesting CLI Tool"""
+    """NetMac - Advanced Network Monitoring and Pentesting CLI Tool"""
     pass
 
 # Network Monitoring Commands
@@ -135,36 +135,41 @@ def scan():
     pass
 
 @scan.command()
-@click.option('--ip-range', default="192.168.1.1/24", help="IP range to scan")
-@click.option('--technique', default="inverse", type=click.Choice(['inverse', 'bad-tcp', 'covert', 'ack-tunneling', 'tcp-timestamp', 'syn-ack', 'randomized-ttl']), help="Scanning technique to use")
+@click.option('--ip-range', required=True, help="IP range or target IP to scan")
+@click.option('--technique', required=True, type=click.Choice(['inverse', 'bad-tcp', 'covert', 'ack-tunneling', 'tcp-timestamp', 'syn-ack', 'randomized-ttl']), help="Scanning technique to use")
 @click.option('--randomize', is_flag=True, help="Randomize the scan to blend in with legitimate traffic")
 @click.option('--legit-traffic', is_flag=True, help="Include legitimate traffic patterns during the scan")
 @click.option('--stealth', is_flag=True, help="Perform scan with enhanced stealth techniques")
-def start(ip_range, technique, randomize, legit_traffic, stealth):
-    """Start an advanced stealth scan using a specific technique"""
+@click.option('--spoof-ip', default=None, help="Spoof the source IP address for the scan")
+@click.option('--fragment', is_flag=True, help="Enable packet fragmentation to bypass certain filters")
+def start(ip_range, technique, randomize, legit_traffic, stealth, spoof_ip, fragment):
+    """Start an advanced stealth scan using a specific technique with optional IP spoofing"""
     logging.info(f"Starting {technique} scan on IP range: {ip_range}")
-    
-    if technique == "inverse":
-        inverse_scan(ip_range, randomize, legit_traffic, stealth)
-    elif technique == "bad-tcp":
-        bad_tcp_scan(ip_range, randomize, legit_traffic, stealth)
-    elif technique == "covert":
-        covert_channel_scan(ip_range, randomize, legit_traffic, stealth)
-    elif technique == "ack-tunneling":
-        ack_tunneling_scan(ip_range, randomize, legit_traffic, stealth)
-    elif technique == "tcp-timestamp":
-        tcp_timestamp_scan(ip_range, randomize, legit_traffic, stealth)
-    elif technique == "syn-ack":
-        syn_ack_scan(ip_range, randomize, legit_traffic, stealth)
-    elif technique == "randomized-ttl":
-        randomized_ttl_scan(ip_range, randomize, legit_traffic, stealth)
+    logging.info(f"Spoofing IP: {spoof_ip if spoof_ip else 'None'}")
 
-def inverse_scan(ip_range, randomize, legit_traffic, stealth):
+    if technique == "inverse":
+        inverse_scan(ip_range, randomize, legit_traffic, stealth, spoof_ip, fragment)
+    elif technique == "bad-tcp":
+        bad_tcp_scan(ip_range, randomize, legit_traffic, stealth, spoof_ip, fragment)
+    elif technique == "covert":
+        covert_channel_scan(ip_range, randomize, legit_traffic, stealth, spoof_ip, fragment)
+    elif technique == "ack-tunneling":
+        ack_tunneling_scan(ip_range, randomize, legit_traffic, stealth, spoof_ip, fragment)
+    elif technique == "tcp-timestamp":
+        tcp_timestamp_scan(ip_range, randomize, legit_traffic, stealth, spoof_ip, fragment)
+    elif technique == "syn-ack":
+        syn_ack_scan(ip_range, randomize, legit_traffic, stealth, spoof_ip, fragment)
+    elif technique == "randomized-ttl":
+        randomized_ttl_scan(ip_range, randomize, legit_traffic, stealth, spoof_ip, fragment)
+
+def inverse_scan(ip_range, randomize, legit_traffic, stealth, spoof_ip, fragment):
     """Perform an inverse scan where responses from closed ports are more revealing"""
     logging.info("Performing inverse scan...")
     
     for ip in scapy.IPNetwork(ip_range):
-        packet = IP(dst=str(ip))/TCP(dport=random.randint(1, 65535), flags="SA")
+        packet = IP(src=spoof_ip if spoof_ip else None, dst=str(ip))/TCP(dport=random.randint(1, 65535), flags="SA")
+        if fragment:
+            packet = fragment_packet(packet)
         if legit_traffic:
             generate_legit_traffic(str(ip))
         if randomize:
@@ -178,12 +183,14 @@ def inverse_scan(ip_range, randomize, legit_traffic, stealth):
             if response.getlayer(TCP).flags == "RA":
                 logging.info(f"{ip} has a closed port, but inverse scan detected it.")
 
-def bad_tcp_scan(ip_range, randomize, legit_traffic, stealth):
+def bad_tcp_scan(ip_range, randomize, legit_traffic, stealth, spoof_ip, fragment):
     """Perform a scan using deliberately malformed TCP packets to evade detection"""
     logging.info("Performing bad TCP checksum scan...")
     
     for ip in scapy.IPNetwork(ip_range):
-        packet = IP(dst=str(ip))/TCP(dport=random.randint(1, 65535), chksum=0xFFFF)
+        packet = IP(src=spoof_ip if spoof_ip else None, dst=str(ip))/TCP(dport=random.randint(1, 65535), chksum=0xFFFF)
+        if fragment:
+            packet = fragment_packet(packet)
         if legit_traffic:
             generate_legit_traffic(str(ip))
         if randomize:
@@ -196,30 +203,37 @@ def bad_tcp_scan(ip_range, randomize, legit_traffic, stealth):
         elif response.haslayer(TCP):
             logging.info(f"Malformed TCP packet to {ip} received a response.")
 
-def covert_channel_scan(ip_range, randomize, legit_traffic, stealth):
+def covert_channel_scan(ip_range, randomize, legit_traffic, stealth, spoof_ip, fragment):
     """Perform a covert channel scan using non-standard or disguised protocols"""
     logging.info("Performing covert channel scan...")
     
     for ip in scapy.IPNetwork(ip_range):
-        packet = IP(dst=str(ip))/UDP(dport=random.randint(1, 65535))/b"CovertData"
+        packet = IP(src=spoof_ip if spoof_ip else None, dst=str(ip))/UDP(dport=random.randint(1, 65535))/b"CovertData"
+        if fragment:
+            packet = fragment_packet(packet)
         if legit_traffic:
+            logging.info(f"[INFO] Sending disguised UDP packets with covert data to {ip}...")
             generate_legit_traffic(str(ip))
+            logging.info("[INFO] Legitimate DNS queries generated for camouflage...")
         if randomize:
             time.sleep(random.uniform(0.5, 2.0))
         if stealth:
             packet = enhance_stealth(packet)
         response = scapy.sr1(packet, timeout=1, verbose=False)
         if response is None:
-            logging.info(f"No response from {ip}, covert channel might be unnoticed.")
+            logging.info(f"[INFO] No response from {ip} - possibly filtered or closed.")
         elif response.haslayer(UDP):
-            logging.info(f"Covert channel to {ip} was detected.")
+            logging.info(f"[INFO] Response received from port {response.sport} - DNS service detected.")
+            logging.info("[INFO] Covert channel scan completed without detection.")
 
-def ack_tunneling_scan(ip_range, randomize, legit_traffic, stealth):
+def ack_tunneling_scan(ip_range, randomize, legit_traffic, stealth, spoof_ip, fragment):
     """Perform an ACK tunneling scan to evade detection by firewalls"""
     logging.info("Performing ACK tunneling scan...")
     
     for ip in scapy.IPNetwork(ip_range):
-        packet = IP(dst=str(ip))/TCP(dport=random.randint(1, 65535), flags="A")
+        packet = IP(src=spoof_ip if spoof_ip else None, dst=str(ip))/TCP(dport=random.randint(1, 65535), flags="A")
+        if fragment:
+            packet = fragment_packet(packet)
         if legit_traffic:
             generate_legit_traffic(str(ip))
         if randomize:
@@ -232,12 +246,14 @@ def ack_tunneling_scan(ip_range, randomize, legit_traffic, stealth):
         elif response.haslayer(TCP):
             logging.info(f"ACK tunneling scan received a response from {ip}.")
 
-def tcp_timestamp_scan(ip_range, randomize, legit_traffic, stealth):
+def tcp_timestamp_scan(ip_range, randomize, legit_traffic, stealth, spoof_ip, fragment):
     """Perform a TCP timestamp option manipulation scan to detect anomalies"""
     logging.info("Performing TCP timestamp option manipulation scan...")
     
     for ip in scapy.IPNetwork(ip_range):
-        packet = IP(dst=str(ip))/TCP(dport=random.randint(1, 65535), options=[('Timestamp', (12345, 0))])
+        packet = IP(src=spoof_ip if spoof_ip else None, dst=str(ip))/TCP(dport=random.randint(1, 65535), options=[('Timestamp', (12345, 0))])
+        if fragment:
+            packet = fragment_packet(packet)
         if legit_traffic:
             generate_legit_traffic(str(ip))
         if randomize:
@@ -250,12 +266,14 @@ def tcp_timestamp_scan(ip_range, randomize, legit_traffic, stealth):
         elif response.haslayer(TCP):
             logging.info(f"TCP timestamp scan detected a response from {ip}.")
 
-def syn_ack_scan(ip_range, randomize, legit_traffic, stealth):
+def syn_ack_scan(ip_range, randomize, legit_traffic, stealth, spoof_ip, fragment):
     """Perform a SYN+ACK scan to detect open and closed ports"""
     logging.info("Performing SYN+ACK scan...")
     
     for ip in scapy.IPNetwork(ip_range):
-        packet = IP(dst=str(ip))/TCP(dport=random.randint(1, 65535), flags="SA")
+        packet = IP(src=spoof_ip if spoof_ip else None, dst=str(ip))/TCP(dport=random.randint(1, 65535), flags="SA")
+        if fragment:
+            packet = fragment_packet(packet)
         if legit_traffic:
             generate_legit_traffic(str(ip))
         if randomize:
@@ -268,12 +286,14 @@ def syn_ack_scan(ip_range, randomize, legit_traffic, stealth):
         elif response.haslayer(TCP):
             logging.info(f"SYN+ACK scan detected a response from {ip}.")
 
-def randomized_ttl_scan(ip_range, randomize, legit_traffic, stealth):
+def randomized_ttl_scan(ip_range, randomize, legit_traffic, stealth, spoof_ip, fragment):
     """Perform a scan with randomized TTL values to avoid detection"""
     logging.info("Performing randomized TTL scan...")
     
     for ip in scapy.IPNetwork(ip_range):
-        packet = IP(dst=str(ip), ttl=random.randint(1, 128))/TCP(dport=random.randint(1, 65535), flags="S")
+        packet = IP(src=spoof_ip if spoof_ip else None, ttl=random.randint(1, 128))/TCP(dport=random.randint(1, 65535), flags="S")
+        if fragment:
+            packet = fragment_packet(packet)
         if legit_traffic:
             generate_legit_traffic(str(ip))
         if randomize:
@@ -290,7 +310,14 @@ def enhance_stealth(packet):
     """Enhance the stealth of a packet by modifying headers and timing"""
     packet[IP].id = random.randint(0, 65535)
     packet[IP].flags = "DF"
+    packet[TCP].seq = random.randint(0, 4294967295)
+    packet[TCP].ack = random.randint(0, 4294967295)
+    packet[IP].ttl = random.randint(64, 128)
     return packet
+
+def fragment_packet(packet):
+    """Fragment the packet to bypass certain types of filtering and detection"""
+    return [packet[i:i+8] for i in range(0, len(packet), 8)]
 
 def generate_legit_traffic(target_ip):
     """Generate legitimate traffic to blend in with the network activity"""
