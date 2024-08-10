@@ -43,3 +43,7 @@
 - In the event of a security incident, having a detailed log of all network activities, including MAC address movements, can be invaluable for investigating the breach and determining the root cause.
 
 
+## Is نیٹمیک Continuous?
+Yes, Netmac is designed to operate continuously. It constantly monitors the network for new devices, tracks the activity of known devices, and logs all relevant data in real-time. This continuous operation is key to its effectiveness, as it ensures that no network activity is missed and that all security-related events are recorded as they happen.
+
+
