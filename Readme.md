@@ -1,4 +1,4 @@
-# NetMac: Advanced Network Monitoring and Security Tool focused on MACs
+# NetMac
 
 **NetMac** is a powerful, versatile, and essential tool designed for network monitoring, security assessment, and penetration testing. It offers unique advantages that make it indispensable for professionals responsible for securing networks or assessing their vulnerabilities. Below is an overview of why NetMac stands out, its core functionalities, and how it can be effectively used by penetration testers, security researchers, and attackers.
 
