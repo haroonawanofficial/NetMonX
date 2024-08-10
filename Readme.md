@@ -103,23 +103,23 @@ NetMonX is essential for anyone serious about maintaining robust network securit
 
 # Confuse Channel:
 - Evades detection by exploiting unmonitored channel hopping.
-- Example Vendors/Models: Cisco Aironet 2800 Series, Aruba Instant APs (e.g., IAP-305).
+- Verified: Cisco Aironet 2800 Series, Aruba Instant APs (e.g., IAP-305).
 
 # Smuggle Data (ICMP):
 - Can discreetly transport data through less scrutinized ICMP traffic.
-- Example Vendors/Models: Palo Alto Networks PA-Series Firewalls, Fortinet FortiGate 60F.
+- Verified: Palo Alto Networks PA-Series Firewalls, Fortinet FortiGate 60F.
 
 # Tunnel Data (DNS):
 - Effective for covert communication using DNS queries.
-- Example Vendors/Models: Cisco Umbrella, Infoblox DNS Security.
+- Verified: Cisco Umbrella, Infoblox DNS Security.
 
 # Wrap Protocol (HTTP):
 - Can bypass basic systems by hiding data within HTTP requests.
-- Example Vendors/Models: F5 Networks BIG-IP, Imperva Incapsula.
+- Verified: F5 Networks BIG-IP, Imperva Incapsula.
 
 # Fragment Data:
 - Potentially avoids detection through fragmented packets.
-- Example Vendors/Models: Check Point R81, Juniper SRX Series.
+- Verified: Check Point R81, Juniper SRX Series.
 
 # Steganography:
 - Conceals data within other files or protocols, evading simpler systems.
@@ -127,7 +127,7 @@ NetMonX is essential for anyone serious about maintaining robust network securit
 
 # Disguise Traffic:
 - Converts traffic between OSI layers to obscure its nature.
-- Example Vendors/Models: Radware AppWall, Sophos XG Firewall.
+- Verified: Radware AppWall, Sophos XG Firewall.
 
 ## Usages
 
