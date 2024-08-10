@@ -183,3 +183,9 @@ Report Summary:
 - 8.8.8.8: DNS service detected on port 53. No response from other ports.
 - 192.168.10.1: HTTP service detected on port 80. No response from port 22.
 ```
+## Usages
+# Scan sample
+- sudo python NetMonX.py monitor start --mac --record-new
+
+# Advance sample
+- sudo python NetMonX.py scan start --ip-range 192.168.1.0/24 --technique inverse --stealth --spoof-ip 192.168.1.100
