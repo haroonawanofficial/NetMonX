@@ -1,14 +1,17 @@
+from scapy.all import *
+import argparse
+import random
 import click
 import logging
-import random
 import time
-import scapy.all as scapy
 import os
 import json
 from datetime import datetime
 from collections import defaultdict
 from scapy.layers.inet import IP, TCP, UDP, ICMP
-from scapy.layers.l2 import Ether, ARP
+from scapy.layers.dns import DNS, DNSQR
+from scapy.layers.dot11 import Dot11
+from scapy.layers.l2 import ARP
 from scapy.config import conf
 
 # Initialize logging
@@ -25,7 +28,7 @@ if os.path.exists(MAC_DATABASE_FILE):
 
 @click.group()
 def cli():
-    """NetMac - Advanced Network Monitoring and Pentesting CLI Tool"""
+    """NetMonX - Advanced Network Monitoring and Pentesting CLI Tool"""
     pass
 
 # Network Monitoring Commands
@@ -50,9 +53,9 @@ def start(mac, wireless, record_new):
 def monitor_mac_addresses(record_new):
     """Monitor MAC addresses in real-time using Scapy"""
     def process_packet(pkt):
-        if pkt.haslayer(scapy.ARP):
-            mac = pkt[scapy.ARP].hwsrc
-            ip = pkt[scapy.ARP].psrc
+        if pkt.haslayer(ARP):
+            mac = pkt[ARP].hwsrc
+            ip = pkt[ARP].psrc
             timestamp = str(datetime.now())
             if mac not in mac_db:
                 logging.info(f"New MAC address detected: {mac} with IP: {ip}")
@@ -65,12 +68,12 @@ def monitor_mac_addresses(record_new):
                 mac_db[mac]['last_seen'] = timestamp
                 logging.info(f"MAC address {mac} detected again. Last seen updated.")
 
-    scapy.sniff(prn=process_packet, filter="arp", store=0)
+    sniff(prn=process_packet, filter="arp", store=0)
 
 def monitor_wireless_mac_addresses(record_new):
     """Monitor Wireless MAC addresses in real-time using Scapy"""
     def process_packet(pkt):
-        if pkt.haslayer(scapy.Dot11):
+        if pkt.haslayer(Dot11):
             mac = pkt.addr2
             timestamp = str(datetime.now())
             if mac and mac not in mac_db:
@@ -83,7 +86,7 @@ def monitor_wireless_mac_addresses(record_new):
                 mac_db[mac]['last_seen'] = timestamp
                 logging.info(f"Wireless MAC address {mac} detected again. Last seen updated.")
     
-    scapy.sniff(prn=process_packet, iface="wlan0", store=0)
+    sniff(prn=process_packet, iface="wlan0", store=0)
 
 def save_mac_database():
     """Save the MAC database to a file"""
@@ -166,7 +169,7 @@ def inverse_scan(ip_range, randomize, legit_traffic, stealth, spoof_ip, fragment
     """Perform an inverse scan where responses from closed ports are more revealing"""
     logging.info("Performing inverse scan...")
     
-    for ip in scapy.IPNetwork(ip_range):
+    for ip in IPNetwork(ip_range):
         packet = IP(src=spoof_ip if spoof_ip else None, dst=str(ip))/TCP(dport=random.randint(1, 65535), flags="SA")
         if fragment:
             packet = fragment_packet(packet)
@@ -176,7 +179,7 @@ def inverse_scan(ip_range, randomize, legit_traffic, stealth, spoof_ip, fragment
             time.sleep(random.uniform(0.5, 2.0))
         if stealth:
             packet = enhance_stealth(packet)
-        response = scapy.sr1(packet, timeout=1, verbose=False)
+        response = sr1(packet, timeout=1, verbose=False)
         if response is None:
             logging.info(f"No response from {ip}, possible closed port or firewalled.")
         elif response.haslayer(TCP):
@@ -187,7 +190,7 @@ def bad_tcp_scan(ip_range, randomize, legit_traffic, stealth, spoof_ip, fragment
     """Perform a scan using deliberately malformed TCP packets to evade detection"""
     logging.info("Performing bad TCP checksum scan...")
     
-    for ip in scapy.IPNetwork(ip_range):
+    for ip in IPNetwork(ip_range):
         packet = IP(src=spoof_ip if spoof_ip else None, dst=str(ip))/TCP(dport=random.randint(1, 65535), chksum=0xFFFF)
         if fragment:
             packet = fragment_packet(packet)
@@ -197,7 +200,7 @@ def bad_tcp_scan(ip_range, randomize, legit_traffic, stealth, spoof_ip, fragment
             time.sleep(random.uniform(0.5, 2.0))
         if stealth:
             packet = enhance_stealth(packet)
-        response = scapy.sr1(packet, timeout=1, verbose=False)
+        response = sr1(packet, timeout=1, verbose=False)
         if response is None:
             logging.info(f"No response from {ip}, possible malformed TCP handling.")
         elif response.haslayer(TCP):
@@ -207,30 +210,27 @@ def covert_channel_scan(ip_range, randomize, legit_traffic, stealth, spoof_ip, f
     """Perform a covert channel scan using non-standard or disguised protocols"""
     logging.info("Performing covert channel scan...")
     
-    for ip in scapy.IPNetwork(ip_range):
+    for ip in IPNetwork(ip_range):
         packet = IP(src=spoof_ip if spoof_ip else None, dst=str(ip))/UDP(dport=random.randint(1, 65535))/b"CovertData"
         if fragment:
             packet = fragment_packet(packet)
         if legit_traffic:
-            logging.info(f"[INFO] Sending disguised UDP packets with covert data to {ip}...")
             generate_legit_traffic(str(ip))
-            logging.info("[INFO] Legitimate DNS queries generated for camouflage...")
         if randomize:
             time.sleep(random.uniform(0.5, 2.0))
         if stealth:
             packet = enhance_stealth(packet)
-        response = scapy.sr1(packet, timeout=1, verbose=False)
+        response = sr1(packet, timeout=1, verbose=False)
         if response is None:
-            logging.info(f"[INFO] No response from {ip} - possibly filtered or closed.")
+            logging.info(f"No response from {ip}, possible filtering or closed.")
         elif response.haslayer(UDP):
-            logging.info(f"[INFO] Response received from port {response.sport} - DNS service detected.")
-            logging.info("[INFO] Covert channel scan completed without detection.")
+            logging.info(f"Response received from port {response.sport} - Covert channel scan detected a response.")
 
 def ack_tunneling_scan(ip_range, randomize, legit_traffic, stealth, spoof_ip, fragment):
     """Perform an ACK tunneling scan to evade detection by firewalls"""
     logging.info("Performing ACK tunneling scan...")
     
-    for ip in scapy.IPNetwork(ip_range):
+    for ip in IPNetwork(ip_range):
         packet = IP(src=spoof_ip if spoof_ip else None, dst=str(ip))/TCP(dport=random.randint(1, 65535), flags="A")
         if fragment:
             packet = fragment_packet(packet)
@@ -240,7 +240,7 @@ def ack_tunneling_scan(ip_range, randomize, legit_traffic, stealth, spoof_ip, fr
             time.sleep(random.uniform(0.5, 2.0))
         if stealth:
             packet = enhance_stealth(packet)
-        response = scapy.sr1(packet, timeout=1, verbose=False)
+        response = sr1(packet, timeout=1, verbose=False)
         if response is None:
             logging.info(f"No response from {ip}, firewall might be filtering.")
         elif response.haslayer(TCP):
@@ -250,7 +250,7 @@ def tcp_timestamp_scan(ip_range, randomize, legit_traffic, stealth, spoof_ip, fr
     """Perform a TCP timestamp option manipulation scan to detect anomalies"""
     logging.info("Performing TCP timestamp option manipulation scan...")
     
-    for ip in scapy.IPNetwork(ip_range):
+    for ip in IPNetwork(ip_range):
         packet = IP(src=spoof_ip if spoof_ip else None, dst=str(ip))/TCP(dport=random.randint(1, 65535), options=[('Timestamp', (12345, 0))])
         if fragment:
             packet = fragment_packet(packet)
@@ -260,7 +260,7 @@ def tcp_timestamp_scan(ip_range, randomize, legit_traffic, stealth, spoof_ip, fr
             time.sleep(random.uniform(0.5, 2.0))
         if stealth:
             packet = enhance_stealth(packet)
-        response = scapy.sr1(packet, timeout=1, verbose=False)
+        response = sr1(packet, timeout=1, verbose=False)
         if response is None:
             logging.info(f"No response from {ip}, possible filtering or blocking.")
         elif response.haslayer(TCP):
@@ -270,7 +270,7 @@ def syn_ack_scan(ip_range, randomize, legit_traffic, stealth, spoof_ip, fragment
     """Perform a SYN+ACK scan to detect open and closed ports"""
     logging.info("Performing SYN+ACK scan...")
     
-    for ip in scapy.IPNetwork(ip_range):
+    for ip in IPNetwork(ip_range):
         packet = IP(src=spoof_ip if spoof_ip else None, dst=str(ip))/TCP(dport=random.randint(1, 65535), flags="SA")
         if fragment:
             packet = fragment_packet(packet)
@@ -280,7 +280,7 @@ def syn_ack_scan(ip_range, randomize, legit_traffic, stealth, spoof_ip, fragment
             time.sleep(random.uniform(0.5, 2.0))
         if stealth:
             packet = enhance_stealth(packet)
-        response = scapy.sr1(packet, timeout=1, verbose=False)
+        response = sr1(packet, timeout=1, verbose=False)
         if response is None:
             logging.info(f"No response from {ip}, possible filtering or firewalled.")
         elif response.haslayer(TCP):
@@ -290,7 +290,7 @@ def randomized_ttl_scan(ip_range, randomize, legit_traffic, stealth, spoof_ip, f
     """Perform a scan with randomized TTL values to avoid detection"""
     logging.info("Performing randomized TTL scan...")
     
-    for ip in scapy.IPNetwork(ip_range):
+    for ip in IPNetwork(ip_range):
         packet = IP(src=spoof_ip if spoof_ip else None, ttl=random.randint(1, 128))/TCP(dport=random.randint(1, 65535), flags="S")
         if fragment:
             packet = fragment_packet(packet)
@@ -300,7 +300,7 @@ def randomized_ttl_scan(ip_range, randomize, legit_traffic, stealth, spoof_ip, f
             time.sleep(random.uniform(0.5, 2.0))
         if stealth:
             packet = enhance_stealth(packet)
-        response = scapy.sr1(packet, timeout=1, verbose=False)
+        response = sr1(packet, timeout=1, verbose=False)
         if response is None:
             logging.info(f"No response from {ip}, possible TTL-based filtering.")
         elif response.haslayer(TCP):
@@ -330,7 +330,7 @@ def generate_legit_traffic(target_ip):
             packet = IP(dst=target_ip)/UDP(dport=53)
         else:
             packet = IP(dst=target_ip)/ICMP()
-        scapy.send(packet, verbose=False)
+        send(packet, verbose=False)
         logging.info(f"Legitimate {pkt_type.__name__} packet sent to {target_ip}")
 
 # Alerts & Notifications Commands
@@ -439,10 +439,123 @@ def features(dpi, anomaly_detection):
         logging.info("Anomaly detection enabled...")
         detect_mac_anomalies()
 
-def perform_dpi():
+def perform_dpi(interface="eth0"):
     """Perform Deep Packet Inspection"""
-    logging.info("Performing Deep Packet Inspection...")
-    # Implement DPI logic here, examining packet payloads for suspicious data
+    logging.info("Performing Deep Packet Inspection on interface %s...", interface)
+
+    def inspect_packet(packet):
+        try:
+            # Extract packet layers and payload
+            if packet.haslayer(Raw):
+                payload = packet[Raw].load
+                logging.info(f"Packet from {packet[IP].src} to {packet[IP].dst}: {payload}")
+
+                # Simple example checks
+                if b"malicious" in payload:
+                    logging.warning("Malicious content detected in packet from %s to %s", packet[IP].src, packet[IP].dst)
+
+                if b"GET" in payload and packet.haslayer(TCP) and packet[TCP].dport == 80:
+                    logging.info("HTTP GET request detected from %s", packet[IP].src)
+            
+            # Inspect DNS queries
+            if packet.haslayer(DNS) and packet.getlayer(DNS).qr == 0:  # DNS query
+                dns_query = packet[DNSQR].qname.decode()
+                logging.info("DNS query for %s from %s", dns_query, packet[IP].src)
+
+        except Exception as e:
+            logging.error("Error processing packet: %s", str(e))
+
+    # Sniffing packets on the specified interface
+    sniff(iface=interface, prn=inspect_packet, store=0)
+
+# Evasion Techniques
+
+@cli.command()
+@click.option('--function', required=True, type=click.Choice(['confuse_channel', 'smuggle_data', 'tunnel_data', 'wrap_protocol', 'fragment_data', 'steganography', 'disguise_traffic']), help="Function to execute")
+@click.option('--source-ip', help="Source IP address")
+@click.option('--target-ip', help="Target IP address")
+@click.option('--interface', help="Network Interface for Channel Switching")
+def evade(function, source_ip, target_ip, interface):
+    """Network Operations for Evasion Techniques"""
+    if function == 'confuse_channel':
+        confuse_channel(interface)
+    elif function == 'smuggle_data':
+        smuggle_data(source_ip, target_ip)
+    elif function == 'tunnel_data':
+        tunnel_data(source_ip, target_ip)
+    elif function == 'wrap_protocol':
+        wrap_protocol(source_ip, target_ip, "example.com")
+    elif function == 'fragment_data':
+        fragment_data(source_ip, target_ip, "This is a fragmented payload")
+    elif function == 'steganography':
+        steganography(source_ip, target_ip)
+    elif function == 'disguise_traffic':
+        disguise_traffic(source_ip, target_ip)
+
+def confuse_channel(interface):
+    """
+    Confuse network monitoring by dynamically switching wireless channels.
+    """
+    channels = [1, 6, 11]  # Common Wi-Fi channels
+    while True:
+        new_channel = random.choice(channels)
+        os.system(f"iwconfig {interface} channel {new_channel}")
+        print(f"Switched to channel {new_channel}")
+        time.sleep(10)  # Switch channel every 10 seconds
+
+def smuggle_data(source_ip, target_ip):
+    """
+    Smuggle data using ICMP packets across network layers.
+    """
+    payload = "Smuggled data hidden in ICMP"
+    pkt = IP(src=source_ip, dst=target_ip) / ICMP() / Raw(load=payload)
+    send(pkt)
+    print("Data smuggled via ICMP packet.")
+
+def tunnel_data(source_ip, target_ip):
+    """
+    Tunnel data inside DNS queries to simulate protocol tunneling.
+    """
+    dns_query = IP(src=source_ip, dst=target_ip) / UDP(dport=53) / DNS(rd=1, qd=DNSQR(qname="www.example.com"))
+    send(dns_query)
+    print("Data tunneled via DNS query.")
+
+def wrap_protocol(source_ip, target_ip, payload):
+    """
+    Wrap data within a legitimate HTTP request to evade detection.
+    """
+    packet = IP(src=source_ip, dst=target_ip) / TCP(dport=80) / Raw(load=f"GET / HTTP/1.1\r\nHost: {payload}\r\n\r\n")
+    send(packet)
+    print("HTTP request sent with disguised payload.")
+
+def fragment_data(source_ip, target_ip, payload):
+    """
+    Fragment data into multiple IP fragments.
+    """
+    for i in range(0, len(payload), 10):  # Fragment every 10 bytes
+        frag = payload[i:i+10]
+        pkt = IP(src=source_ip, dst=target_ip, flags="MF", frag=i//10) / UDP(dport=4444) / frag
+        send(pkt)
+    print("Data fragmented and sent.")
+
+def steganography(source_ip, target_ip):
+    """
+    Embed hidden data within TCP packet flags.
+    """
+    hidden_msg = "secret"
+    flags = ['F', 'S', 'R', 'P', 'A', 'U']  # TCP flags
+    for flag in flags:
+        pkt = IP(src=source_ip, dst=target_ip) / TCP(flags=flag) / Raw(load=hidden_msg)
+        send(pkt)
+    print("Steganography data sent via TCP flags.")
+
+def disguise_traffic(source_ip, target_ip):
+    """
+    Convert traffic between OSI layers to confuse monitoring systems.
+    """
+    pkt = IP(src=source_ip, dst=target_ip) / UDP() / Raw(load="Layer 7 data in Layer 4 protocol")
+    send(pkt)
+    print("Traffic disguised across OSI layers.")
 
 if __name__ == '__main__':
     cli()
