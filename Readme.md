@@ -1,4 +1,4 @@
-# NetMac: Advanced Network Monitoring and Security Tool
+# NetMac: Advanced Network Monitoring and Security Tool focused on MACs
 
 **NetMac** is a powerful, versatile, and essential tool designed for network monitoring, security assessment, and penetration testing. It offers unique advantages that make it indispensable for professionals responsible for securing networks or assessing their vulnerabilities. Below is an overview of why NetMac stands out, its core functionalities, and how it can be effectively used by penetration testers, security researchers, and attackers.
 
@@ -98,3 +98,51 @@ NetMac is designed to be highly customizable, allowing users to tailor its funct
 - **Proactive Security**: By providing continuous monitoring, real-time detection, and detailed reporting, NetMac helps you stay ahead of potential threats and maintain a secure network environment.
 
 NetMac is essential for anyone serious about maintaining robust network security, conducting thorough penetration tests, or studying advanced network behaviors. It’s a tool that not only helps identify vulnerabilities but also enables proactive defense strategies, ensuring that your network remains secure against sophisticated threats.
+
+## Output
+‘‘‘bash
+NetMac - Advanced Network Monitoring and Security Tool
+
+Starting scan on target: 8.8.8.8 (Google DNS)
+-----------------------------------------------------
+Technique: Covert Channel Scan
+Randomizing traffic: Enabled
+Stealth Mode: Enabled
+
+[INFO] Sending disguised UDP packets with covert data to 8.8.8.8...
+[INFO] Legitimate DNS queries generated for camouflage...
+[INFO] Response received from port 53 - DNS service detected.
+[INFO] No response from other ports - possibly filtered or closed.
+[INFO] Covert channel scan completed without detection.
+
+Scan completed for 8.8.8.8 (Google DNS)
+-----------------------------------------------------
+
+Starting scan on target: 192.168.10.1
+-----------------------------------------------------
+Technique: Bad TCP Checksum Scan
+Randomizing traffic: Disabled
+Legitimate Traffic: Enabled
+
+[INFO] Sending malformed TCP packets with bad checksum to 192.168.10.1...
+[INFO] Legitimate HTTP traffic generated to blend with the network...
+[INFO] Response received from port 80 - HTTP service detected.
+[INFO] No response from port 22 - possibly filtered or closed.
+[INFO] Potential anomaly detected: Unusual IP behavior, further investigation recommended.
+
+Scan completed for 192.168.10.1
+-----------------------------------------------------
+
+Report Summary:
+- 8.8.8.8 (Google DNS): 
+  - Detected active DNS service on port 53.
+  - No response from other ports, indicating strong filtering or closed ports.
+  - Covert channel scan successfully evaded detection.
+
+- 192.168.10.1:
+  - Detected active HTTP service on port 80.
+  - No response from port 22 (SSH), possibly filtered or closed.
+  - Detected potential anomaly related to unusual IP behavior.
+
+Logs saved to: scan_results.log and internal_scan.log
+‘‘‘
