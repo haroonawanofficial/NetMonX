@@ -6,8 +6,23 @@
 ```
 NetMonX is a powerful and versatile tool tailored for network security analysis, ethical hacking, and advanced pentesting.
 Its broad feature set, combined with stealth capabilities, makes it ideal for anyone seeking to secure networks,
-identify vulnerabilities, or test against sophisticated attack scenarios. Designed for professionals and enthusiasts in network security and cybersecurity.
+identify vulnerabilities, or test against sophisticated attack scenarios.
+Designed for professionals and enthusiasts in network security and cybersecurity.
 It provides multiple functionalities:
+
+Why I built it?
+All-in-One Solution: Most network tools focus on a single aspect, like scanning or monitoring.
+NetMonX integrates these functionalities into one cohesive package.
+
+Stealth and Sophistication: Traditional tools (like Nmap) lack the flexibility for stealth operations.
+This tool fills that gap by incorporating advanced evasion methods.
+
+Customizability: Unlike closed-source tools, NetMonX provides a Python-based framework that can be tailored for specific requirements.
+
+Educational Value: By exposing users to multiple scanning and evasion techniques,
+it serves as an excellent learning tool for aspiring cybersecurity professionals.
+
+Other Values it brings,
 
 Real-Time Monitoring:
 Tracks devices by MAC addresses (wired and wireless).
@@ -67,17 +82,6 @@ Cybersecurity Enthusiasts: To learn and experiment with scanning and evasion tec
 Network Administrators: To generate reports, identify devices, and detect unauthorized access.
 Researchers and Developers: To study network behavior, test vulnerabilities, and build upon the tool.
 
-Why I built it?
-All-in-One Solution: Most network tools focus on a single aspect, like scanning or monitoring.
-NetMonX integrates these functionalities into one cohesive package.
-
-Stealth and Sophistication: Traditional tools (like Nmap) lack the flexibility for stealth operations.
-This tool fills that gap by incorporating advanced evasion methods.
-
-Customizability: Unlike closed-source tools, NetMonX provides a Python-based framework that can be tailored for specific requirements.
-
-Educational Value: By exposing users to multiple scanning and evasion techniques,
-it serves as an excellent learning tool for aspiring cybersecurity professionals.
 ```
 
 ## Key Features and Advantages of NetMonX
