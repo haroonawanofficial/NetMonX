@@ -17,7 +17,10 @@ Why I built it?
 - Surpasses tools like Nmap and others in stealth operations
 - Surpasses tools like Nmap when doing stealth port scan operations.
 - Surpasses tools like Nmap when they are failing.
+- It serves the purpose by working as a crowbar to dig out of IPS/IDS/Firewalls
+- It serves the purpose by working as a crowbar for AI/ML firewall/IDS/IPS products
 - This tool fills that gap by incorporating advanced evasion methods.
+- Extreme TCP/IP Network Research
 - By exposing users to multiple scanning and evasion techniques.
 - It serves as an excellent learning tool for aspiring cybersecurity professionals.
 
