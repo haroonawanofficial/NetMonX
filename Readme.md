@@ -135,6 +135,7 @@ NetMonX functionality can provide physical movement insights and highlight netwo
 - **Physical Movement Tracking**: Identify moving devices (e.g., employees, intruders) in a building.
 - **Network Performance**: Analyze roaming behavior to optimize AP placement and network configurations.
 - **Security Audits**: Detect suspicious roaming, such as attackers switching between APs to evade detection.
+- **Full Support**: 802.11/etc, SSID, BSSID: Macs, Encryption Types, WPA/WPA2/WPA3, RSSI and more.....
 
 ```
 Example:
