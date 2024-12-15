@@ -11,16 +11,15 @@ Designed for professionals and enthusiasts in network security and cybersecurity
 It provides multiple functionalities:
 
 Why I built it?
-All-in-One Solution: Most network tools focus on a single aspect, like scanning or monitoring.
-NetMonX integrates these functionalities into one cohesive package.
-
-Stealth and Sophistication: Traditional tools (like Nmap) lack the flexibility for stealth operations.
-This tool fills that gap by incorporating advanced evasion methods.
-
-Customizability: Unlike closed-source tools, NetMonX provides a Python-based framework that can be tailored for specific requirements.
-
-Educational Value: By exposing users to multiple scanning and evasion techniques,
-it serves as an excellent learning tool for aspiring cybersecurity professionals.
+- Most network tools focus on a single aspect, like scanning or monitoring.
+- NetMonX integrates these functionalities into one cohesive package.
+- Traditional tools (like Nmap) lack the flexibility for stealth operations.
+- Surpasses tools like Nmap and others in stealth operations
+- Surpasses tools like Nmap when doing stealth port scan operations.
+- Surpasses tools like Nmap when they are failing.
+- This tool fills that gap by incorporating advanced evasion methods.
+- By exposing users to multiple scanning and evasion techniques.
+- It serves as an excellent learning tool for aspiring cybersecurity professionals.
 
 Other Values it brings,
 
