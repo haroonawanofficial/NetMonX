@@ -4,7 +4,10 @@
 
 # Newbies Section
 ```
-NetMonX is a powerful and versatile tool tailored for network security analysis, ethical hacking, and advanced pentesting. Its broad feature set, combined with stealth capabilities, makes it ideal for anyone seeking to secure networks, identify vulnerabilities, or test against sophisticated attack scenarios. Designed for professionals and enthusiasts in network security and cybersecurity. It provides multiple functionalities:
+NetMonX is a powerful and versatile tool tailored for network security analysis, ethical hacking, and advanced pentesting.
+Its broad feature set, combined with stealth capabilities, makes it ideal for anyone seeking to secure networks,
+identify vulnerabilities, or test against sophisticated attack scenarios. Designed for professionals and enthusiasts in network security and cybersecurity.
+It provides multiple functionalities:
 
 Real-Time Monitoring:
 Tracks devices by MAC addresses (wired and wireless).
@@ -32,13 +35,16 @@ Detects suspicious payloads and DNS queries.
 
 Why Use?
 1. Comprehensive Network Security
-It consolidates network monitoring, pentesting, and evasion techniques into a single tool. This eliminates the need to juggle multiple tools for different tasks.
+It consolidates network monitoring, pentesting, and evasion techniques into a single tool.
+This eliminates the need to juggle multiple tools for different tasks.
 
 2. Real-Time Threat Detection
-With features like rogue device detection, anomaly monitoring, and stealth scans, the tool actively detects potential threats in real-time, giving security professionals immediate insights into their network.
+With features like rogue device detection, anomaly monitoring, and stealth scans, the tool actively detects potential threats in real-time,
+giving security professionals immediate insights into their network.
 
 3. Stealth Capabilities
-The tool is built for environments where detection must be avoided, such as ethical hacking or penetration testing scenarios. Features like traffic randomization, stealth monitoring, and covert scanning make it highly effective for stealth operations.
+The tool is built for environments where detection must be avoided, such as ethical hacking or penetration testing scenarios.
+Features like traffic randomization, stealth monitoring, and covert scanning make it highly effective for stealth operations.
 
 4. Versatility and Automation
 It supports a wide range of techniques:
@@ -47,10 +53,12 @@ Database integration for device tracking.
 Automation of routine monitoring and reporting tasks.
 
 5. Evasion and Testing
-By employing evasion techniques like DNS tunneling, traffic disguising, and payload wrapping, it helps test a network's resilience against sophisticated attacks. This is crucial for identifying weak points in network defenses.
+By employing evasion techniques like DNS tunneling, traffic disguising, and payload wrapping,
+it helps test a network's resilience against sophisticated attacks. This is crucial for identifying weak points in network defenses.
 
 6. Customizable and Expandable
-The script is built in Python, allowing users to modify or extend its functionalities to suit specific needs. For example, new scanning techniques, reporting formats, or alert mechanisms can be added.
+The script is built in Python, allowing users to modify or extend its functionalities to suit specific needs.
+For example, new scanning techniques, reporting formats, or alert mechanisms can be added.
 
 Who Can use It?
 Network Security Professionals: To monitor networks, detect rogue devices, and analyze anomalies.
@@ -60,10 +68,16 @@ Network Administrators: To generate reports, identify devices, and detect unauth
 Researchers and Developers: To study network behavior, test vulnerabilities, and build upon the tool.
 
 Why I built it?
-All-in-One Solution: Most network tools focus on a single aspect, like scanning or monitoring. NetMonX integrates these functionalities into one cohesive package.
-Stealth and Sophistication: Traditional tools (like Nmap) lack the flexibility for stealth operations. This tool fills that gap by incorporating advanced evasion methods.
+All-in-One Solution: Most network tools focus on a single aspect, like scanning or monitoring.
+NetMonX integrates these functionalities into one cohesive package.
+
+Stealth and Sophistication: Traditional tools (like Nmap) lack the flexibility for stealth operations.
+This tool fills that gap by incorporating advanced evasion methods.
+
 Customizability: Unlike closed-source tools, NetMonX provides a Python-based framework that can be tailored for specific requirements.
-Educational Value: By exposing users to multiple scanning and evasion techniques, it serves as an excellent learning tool for aspiring cybersecurity professionals.
+
+Educational Value: By exposing users to multiple scanning and evasion techniques,
+it serves as an excellent learning tool for aspiring cybersecurity professionals.
 ```
 
 ## Key Features and Advantages of NetMonX
