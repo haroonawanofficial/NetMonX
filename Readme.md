@@ -142,34 +142,17 @@ Example:
 Client: 00:11:22:33:44:55
 APs: AA:BB:CC:DD:EE:FF and FF:EE:DD:CC:BB:AA
 
-Script Logs
 The client initially connects to AP AA:BB:CC:DD:EE:FF:
-
 2024-12-15 14:05:00 - Client 00:11:22:33:44:55 connected to AP AA:BB:CC:DD:EE:FF
+
 The client roams to AP FF:EE:DD:CC:BB:AA:
-
 2024-12-15 14:10:00 - [ROAMING] Client 00:11:22:33:44:55 roamed from AP AA:BB:CC:DD:EE:FF to AP FF:EE:DD:CC:BB:AA at 2024-12-15 14:10:00
-If the client roams back to the original AP:
 
+If the client roams back to the original AP:
 2024-12-15 14:15:00 - [ROAMING] Client 00:11:22:33:44:55 roamed from AP FF:EE:DD:CC:BB:AA to AP AA:BB:CC:DD:EE:FF at 2024-12-15 14:15:00
 
 
-with open("roaming_history.json", "w") as f:
-    json.dump(client_ap_map, f, indent=4)
-logging.info("Roaming history saved to roaming_history.json")
-Track Frequent Roamers
-Detect devices that roam frequently between APs:
-roaming_count = defaultdict(int)
-
-if client_mac in client_ap_map and client_ap_map[client_mac] != ap_mac:
-    roaming_count[client_mac] += 1
-
-if roaming_count[client_mac] > 3:  # Threshold for frequent roaming
-    logging.warning(f"Frequent roamer detected: Client {client_mac} roamed {roaming_count[client]
-
-Also
-
-Export Roaming History
+Export Roaming History:
 Save roaming data into a JSON or CSV file
 ```
 
