@@ -4,7 +4,8 @@
 
 # Quick Section
 ```
-This will help anyone understand, what this tool is about and how powerful this tool can be in understanding the vulnerabilities on the spot of any system being protected by firewalls, IPS, IDS, NBA, etc
+This will help anyone understand, what this tool is about and how powerful this tool can be in understanding the vulnerabilities
+on the spot of any system being protected by firewalls, IPS, IDS, NBA, etc
 
 command:
 sudo python3 netmonx.py evade --function disguise_traffic --source-ip 192.168.163.129 --target-ip 192.168.163.129
