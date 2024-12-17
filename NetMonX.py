@@ -1,4 +1,5 @@
-from scapy.all import *
+from scapy.all import fragment, send, IP, TCP, UDP, ICMP, Raw, GRE
+from netaddr import IPNetwork
 import argparse
 import random
 import click
@@ -13,6 +14,36 @@ from scapy.layers.dns import DNS, DNSQR
 from scapy.layers.dot11 import Dot11
 from scapy.layers.l2 import ARP
 from scapy.config import conf
+from scapy.packet import Packet, bind_layers
+from scapy.fields import ByteField, ShortField, IPField, BitField
+
+# Manually define MPLS
+class MPLS(Packet):
+    name = "MPLS"
+    fields_desc = [
+        BitField("label", 3, 20),  # MPLS Label
+        BitField("tc", 0, 3),      # Traffic Class
+        BitField("s", 1, 1),       # Bottom of Stack
+        ByteField("ttl", 64)       # Time To Live
+    ]
+
+# Bind MPLS to IP
+bind_layers(MPLS, IP)
+
+# Manually define the IGMP class if not available
+class IGMP(Packet):
+    name = "IGMP"
+    fields_desc = [
+        ByteField("type", 0x11),       # IGMP Type: Membership Query/Report
+        ByteField("mrcode", 0),        # Max Response Code
+        ShortField("checksum", 0),     # Checksum
+        IPField("group", "0.0.0.0")    # Group Address
+    ]
+
+# Bind IGMP to IP protocol 2
+bind_layers(IP, IGMP, proto=2)
+
+
 
 # Initialize logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(message)s')
@@ -116,10 +147,37 @@ def protect(rogue_detection, stealth, anomaly_detection):
         logging.info("Anomaly detection enabled...")
         detect_mac_anomalies()
 
+import time
+
 def detect_rogue_devices():
-    """Detect rogue devices on the network"""
-    logging.info("Scanning for rogue devices...")
-    # Implement logic to detect rogue devices by comparing known MACs with current detections
+    """Continuously detect rogue devices on the network."""
+    logging.info("Scanning for rogue devices. Press Ctrl+C to stop...")
+
+    try:
+        while True:
+            # Sniff ARP packets to detect new devices
+            def process_packet(pkt):
+                if pkt.haslayer(ARP):
+                    mac = pkt[ARP].hwsrc
+                    ip = pkt[ARP].psrc
+                    timestamp = str(datetime.now())
+                    if mac not in mac_db:
+                        logging.warning(f"Rogue device detected: MAC {mac} with IP {ip}")
+                        mac_db[mac] = {'ip': ip, 'first_seen': timestamp, 'last_seen': timestamp}
+                        save_mac_database()
+                    else:
+                        logging.info(f"Known device detected: MAC {mac} with IP {ip}")
+                        mac_db[mac]['last_seen'] = timestamp
+                        save_mac_database()
+            
+            # Sniff for ARP packets (adjust filter for specific traffic if needed)
+            sniff(prn=process_packet, filter="arp", store=0, timeout=5)
+            
+            time.sleep(1)  # Pause briefly to avoid resource overload
+
+    except KeyboardInterrupt:
+        logging.info("Rogue device detection stopped by user.")
+
 
 def detect_mac_anomalies():
     """Detect anomalies in MAC behavior"""
@@ -165,6 +223,7 @@ def start(ip_range, technique, randomize, legit_traffic, stealth, spoof_ip, frag
     elif technique == "randomized-ttl":
         randomized_ttl_scan(ip_range, randomize, legit_traffic, stealth, spoof_ip, fragment)
 
+#Defin Custom Ports
 def inverse_scan(ip_range, randomize, legit_traffic, stealth, spoof_ip, fragment):
     """Perform an inverse scan where responses from closed ports are more revealing"""
     logging.info("Performing inverse scan...")
@@ -503,23 +562,58 @@ def confuse_channel(interface):
         print(f"Switched to channel {new_channel}")
         time.sleep(10)  # Switch channel every 10 seconds
 
+LOG_FILE = "smuggle_data_log.txt"
+
+def log_packet(action, packet, response=None):
+    """Log packets sent and responses received to a file."""
+    with open(LOG_FILE, "a") as log:
+        log.write(f"{datetime.now()} - {action}\n")
+        log.write(f"Packet: {packet.summary()}\n")
+        if response:
+            log.write(f"Response: {response.summary()}\n")
+        log.write("\n")
+
+def generate_random_payload(size=32):
+    """Generate a randomized payload with alphanumeric characters and noise."""
+    characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+-=[]{}|;:',.<>?/`~"
+    return ''.join(random.choice(characters) for _ in range(size))
+
 def smuggle_data(source_ip, target_ip):
-    """
-    Smuggle data using ICMP packets across network layers.
-    """
-    payload = "Smuggled data hidden in ICMP"
-    pkt = IP(src=source_ip, dst=target_ip) / ICMP() / Raw(load=payload)
-    send(pkt)
-    print("Data smuggled via ICMP packet.")
+    """Advanced ICMP data smuggling with dynamic payloads and adaptive behavior."""
+    print("[*] Starting advanced ICMP data smuggling...")
+    for i in range(20):
+        payload_size = random.randint(20, 120)
+        noise = generate_random_payload(payload_size)
+        ttl = random.randint(40, 128)
+
+        pkt = IP(src=source_ip, dst=target_ip, ttl=ttl, id=random.randint(1, 65535)) / \
+              ICMP(type=8, code=0) / Raw(load=noise)
+
+        if random.choice([True, False]):
+            pkt = fragment(pkt, fragsize=random.randint(8, 16))  # Fragmentation
+            print("[!] Sending fragmented packet...")
+
+        response = sr1(pkt, timeout=1, verbose=False)
+        log_packet("Smuggle Data Packet", pkt, response)
+        print(f"[+] Sent ICMP packet {i+1} with TTL={ttl} and Payload Size={payload_size}")
+
+        time.sleep(random.uniform(0.1, 2.0))
 
 def tunnel_data(source_ip, target_ip):
-    """
-    Tunnel data inside DNS queries to simulate protocol tunneling.
-    """
-    dns_query = IP(src=source_ip, dst=target_ip) / UDP(dport=53) / DNS(rd=1, qd=DNSQR(qname="www.example.com"))
-    send(dns_query)
-    print("Data tunneled via DNS query.")
+    """Tunnel data inside DNS queries to simulate protocol tunneling."""
+    print("[*] Starting DNS tunneling...")
+    for i in range(10):
+        payload = generate_random_payload(random.randint(10, 30))
+        dns_query = IP(src=source_ip, dst=target_ip) / \
+                    UDP(dport=53) / DNS(rd=1, qd=DNSQR(qname=f"{payload}.example.com"))
 
+        response = sr1(dns_query, timeout=2, verbose=False)
+        log_packet("Tunnel Data Packet", dns_query, response)
+        print(f"[+] Sent DNS query with payload: {payload}")
+
+        time.sleep(random.uniform(0.5, 2.5))
+
+    print("[*] DNS tunneling completed.")
 def wrap_protocol(source_ip, target_ip, payload):
     """
     Wrap data within a legitimate HTTP request to evade detection.
@@ -529,14 +623,19 @@ def wrap_protocol(source_ip, target_ip, payload):
     print("HTTP request sent with disguised payload.")
 
 def fragment_data(source_ip, target_ip, payload):
-    """
-    Fragment data into multiple IP fragments.
-    """
-    for i in range(0, len(payload), 10):  # Fragment every 10 bytes
-        frag = payload[i:i+10]
-        pkt = IP(src=source_ip, dst=target_ip, flags="MF", frag=i//10) / UDP(dport=4444) / frag
-        send(pkt)
-    print("Data fragmented and sent.")
+    """Fragment data into multiple IP fragments to bypass reassembly detection."""
+    print("[*] Sending fragmented packets...")
+    for i in range(0, len(payload), 10):
+        frag = payload[i:i + 10] + generate_random_payload(5)  # Add random noise
+        pkt = IP(src=source_ip, dst=target_ip, flags="MF", frag=i // 10) / \
+              UDP(dport=4444) / Raw(load=frag)
+
+        send(pkt, verbose=False)
+        log_packet("Fragment Data Packet", pkt)
+        print(f"[+] Sent fragmented packet {i // 10 + 1} with payload chunk: {frag}")
+
+        time.sleep(random.uniform(0.2, 1.0))
+
 
 def steganography(source_ip, target_ip):
     """
@@ -551,11 +650,63 @@ def steganography(source_ip, target_ip):
 
 def disguise_traffic(source_ip, target_ip):
     """
-    Convert traffic between OSI layers to confuse monitoring systems.
+    Disguise traffic to confuse monitoring systems by using unusual protocols,
+    malformed packets, fragmented headers, and randomized payloads.
     """
-    pkt = IP(src=source_ip, dst=target_ip) / UDP() / Raw(load="Layer 7 data in Layer 4 protocol")
-    send(pkt)
-    print("Traffic disguised across OSI layers.")
+    print("[*] Starting advanced traffic disguise with unusual protocols...")
+
+    # List of unusual protocols
+    unusual_protocols = [
+        "GRE", "ESP", "AH", "IP-in-IP", "IGMP", "EIGRP", "PIM", "L2TP", "MPLS"
+    ]
+
+    for i in range(50):  # Send 50 randomized packets
+        # Generate random payload with varying size and noise
+        payload = generate_random_payload(random.randint(50, 200))
+        ttl = random.randint(5, 64)  # Randomize TTL for more suspicion
+        proto = random.choice(unusual_protocols)
+        pkt = IP(src=source_ip, dst=target_ip, ttl=ttl, id=random.randint(1, 65535))
+
+        # Use unusual protocols with random headers
+        if proto == "GRE":  # Generic Routing Encapsulation
+            pkt /= GRE(proto=random.randint(0, 255)) / Raw(load=payload)
+        elif proto == "ESP":  # Encapsulating Security Payload
+            pkt /= IP(proto=50) / Raw(load=payload)
+        elif proto == "AH":  # Authentication Header
+            pkt /= IP(proto=51) / Raw(load=payload)
+        elif proto == "IP-in-IP":  # IP encapsulated within IP
+            pkt /= IP(proto=4) / IP(src=random_ip(), dst=random_ip()) / Raw(load=payload)
+        elif proto == "IGMP":  # Internet Group Management Protocol
+            pkt /= IGMP(type=random.choice([0x11, 0x12, 0x16]), mrcode=random.randint(0, 255)) / Raw(load=payload)
+        elif proto == "EIGRP":  # Cisco's Enhanced Interior Gateway Routing Protocol
+            pkt /= IP(proto=88) / Raw(load=payload)
+        elif proto == "PIM":  # Protocol Independent Multicast
+            pkt /= IP(proto=103) / Raw(load=payload)
+        elif proto == "L2TP":  # Layer 2 Tunneling Protocol
+            pkt /= UDP(dport=1701) / Raw(load=payload)
+        elif proto == "MPLS":  # Multi-Protocol Label Switching
+            pkt /= MPLS(label=random.randint(1, 1048575), s=1) / Raw(load=payload)
+
+        # Handle packet fragmentation
+        if random.choice([True, False]):
+            fragments = fragment(pkt, fragsize=random.randint(8, 32))  # Irregular fragmentation
+            print(f"[!] Sending fragmented {proto} packet...")
+            for frag in fragments:
+                send(frag, verbose=False)
+                log_packet(f"Fragmented {proto} Traffic Packet", frag)
+        else:
+            send(pkt, verbose=False)
+            log_packet(f"Disguised {proto} Traffic Packet", pkt)
+
+        print(f"[+] Sent {proto} packet {i+1} with TTL={ttl} and payload size={len(payload)}")
+        time.sleep(random.uniform(0.05, 1.0))  # Adaptive delay for extra stealth
+
+    print("[*] Advanced traffic disguise completed.")
+
+def random_ip():
+    """Generate a random IP address."""
+    return ".".join(str(random.randint(1, 255)) for _ in range(4))
+
 
 if __name__ == '__main__':
     cli()
