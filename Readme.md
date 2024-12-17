@@ -2,6 +2,48 @@
 
 **NetMonX** is a powerful, versatile, and essential tool designed for network monitoring, security assessment, and penetration testing. It offers unique advantages that make it indispensable for professionals responsible for securing networks or assessing their vulnerabilities. Below is an overview of why NetMonX stands out, its core functionalities, and how it can be effectively used by penetration testers, security researchers, and attackers.
 
+# Quick Section
+```
+This will help anyone understand, what this tool is about and how powerful this tool can be in understanding the vulnerabilities on the spot of any system being protected by firewalls, IPS, IDS, NBA, etc
+
+command:
+sudo python3 netmonx.py evade --function disguise_traffic --source-ip 192.168.163.129 --target-ip 192.168.163.129
+
+output:
+[*] Starting advanced traffic disguise with unusual protocols...
+[!] Sending fragmented IP-in-IP packet...
+[+] Sent IP-in-IP packet 1 with TTL=40 and payload size=172
+[+] Sent EIGRP packet 2 with TTL=10 and payload size=193
+[!] Sending fragmented GRE packet...
+[+] Sent GRE packet 3 with TTL=41 and payload size=129
+[+] Sent ESP packet 4 with TTL=14 and payload size=148
+[!] Sending fragmented IGMP packet...
+[+] Sent IGMP packet 5 with TTL=49 and payload size=182
+[+] Sent PIM packet 6 with TTL=25 and payload size=177
+[!] Sending fragmented IGMP packet...
+[+] Sent IGMP packet 7 with TTL=59 and payload size=171
+[+] Sent GRE packet 8 with TTL=45 and payload size=61
+[+] Sent AH packet 9 with TTL=24 and payload size=183
+[+] Sent L2TP packet 10 with TTL=5 and payload size=125
+[+] Sent L2TP packet 11 with TTL=5 and payload size=79
+[+] Sent IP-in-IP packet 12 with TTL=16 and payload size=146
+[+] Sent L2TP packet 13 with TTL=36 and payload size=82
+[+] Sent IP-in-IP packet 14 with TTL=15 and payload size=189
+[!] Sending fragmented IGMP packet...
+[+] Sent IGMP packet 15 with TTL=55 and payload size=168
+[+] Sent EIGRP packet 26 with TTL=49 and payload size=101
+[!] Sending fragmented IGMP packet...
+[+] Sent IGMP packet 27 with TTL=50 and payload size=161
+[+] Sent EIGRP packet 29 with TTL=38 and payload size=59
+
+
+What is this?:
+Encrypts the payload byte-by-byte using the given key (0xAA by default).
+Ensures the payload is obfuscated and harder to analyze by IDS/IPS/NBA.
+Fully randomized and obfuscated to send or receieve payload
+```
+
+
 # Newbies Section
 ```
 NetMonX is a powerful and versatile tool tailored for network security analysis, ethical hacking, and advanced pentesting.
