@@ -4,13 +4,14 @@
 
 # Quick Section
 ```
-This will help anyone understand, what this tool is about and how powerful this tool can be in understanding the vulnerabilities
-on the spot of any system being protected by firewalls, IPS, IDS, NBA, etc
+This will help anyone understand, what this tool is about and how powerful
+this tool can be in understanding the vulnerabilities on the spot of any system being
+protected by firewalls, IPS, IDS, NBA, etc
 
-command:
+Command:
 sudo python3 netmonx.py evade --function disguise_traffic --source-ip 192.168.163.129 --target-ip 192.168.163.129
 
-output:
+Output:
 [*] Starting advanced traffic disguise with unusual protocols...
 [!] Sending fragmented IP-in-IP packet...
 [+] Sent IP-in-IP packet 1 with TTL=40 and payload size=172
@@ -37,6 +38,17 @@ output:
 [+] Sent IGMP packet 27 with TTL=50 and payload size=161
 [+] Sent EIGRP packet 29 with TTL=38 and payload size=59
 
+otuput:
+08:21:16.846218 IP kubuntu2204 > kubuntu2204: IP truncated-ip - 190 bytes missing! localhost > localhost: IP  [|ip]
+08:21:17.349312 IP kubuntu2204 > kubuntu2204: IP truncated-ip - 69 bytes missing! localhost > localhost:  [|eigrp]
+08:21:17.370954 IP kubuntu2204 > kubuntu2204: ipencap
+08:21:17.664567 IP kubuntu2204 > kubuntu2204: igmp query v3 [max resp time 6.5s]
+08:21:18.675807 IP kubuntu2204 > kubuntu2204: IP  [|ip]
+08:21:19.252162 IP kubuntu2204 > kubuntu2204: igmp v2 report 0.0.0.0
+08:21:19.263872 IP kubuntu2204 > kubuntu2204: igmp
+08:21:20.003659 IP kubuntu2204 > kubuntu2204: IP localhost > localhost: ESP(spi=0x2425294b,seq=0x64642161), length 183
+08:21:20.263576 IP kubuntu2204 > kubuntu2204: IP truncated-ip - 55 bytes missing! localhost > localhost:  [|eigrp]
+........
 
 What is this?:
 Encrypts the payload byte-by-byte using the given key (0xAA by default).
