@@ -1,6 +1,8 @@
 # NetMonX
 
-**NetMonX** is a powerful, versatile, and essential tool designed for wireless network monitoring, security assessment, and penetration testing not wired. It supporst WPA1,2,3 including Wifi6 anw Wifi6e and Wifi7. It offers unique advantages that make it indispensable for professionals responsible for securing networks or assessing their vulnerabilities. Below is an overview of why NetMonX stands out, its core functionalities, and how it can be effectively used by penetration testers, security researchers, and attackers.
+- **NetMonX** is a powerful, tool designed for wireless/wired network monitoring, security assessment, and penetration testingIt supporst all network topology, managed mode, WPA1,2,3 including Wifi6 anw Wifi6e and Wifi7. 
+- It offers unique advantages that make it indispensable for professionals responsible for securing networks or assessing their vulnerabilities.
+- Below is an overview of why NetMonX stands out, its core functionalities, and how it can be effectively used by penetration testers, security researchers, and attackers.
 
 # Quick Section
 ```
