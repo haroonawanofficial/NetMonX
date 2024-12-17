@@ -8,10 +8,10 @@ This will help anyone understand, what this tool is about and how powerful
 this tool can be in understanding the vulnerabilities on the spot of any system being
 protected by firewalls, IPS, IDS, NBA, etc
 
-Command:
+Command Case 1:
 sudo python3 netmonx.py evade --function disguise_traffic --source-ip 192.168.163.129 --target-ip 192.168.163.129
 
-Output:
+Sent:
 [*] Starting advanced traffic disguise with unusual protocols...
 [!] Sending fragmented IP-in-IP packet...
 [+] Sent IP-in-IP packet 1 with TTL=40 and payload size=172
@@ -38,7 +38,7 @@ Output:
 [+] Sent IGMP packet 27 with TTL=50 and payload size=161
 [+] Sent EIGRP packet 29 with TTL=38 and payload size=59
 
-otuput:
+Output:
 08:21:16.846218 IP kubuntu2204 > kubuntu2204: IP truncated-ip - 190 bytes missing! localhost > localhost: IP  [|ip]
 08:21:17.349312 IP kubuntu2204 > kubuntu2204: IP truncated-ip - 69 bytes missing! localhost > localhost:  [|eigrp]
 08:21:17.370954 IP kubuntu2204 > kubuntu2204: ipencap
@@ -50,7 +50,30 @@ otuput:
 08:21:20.263576 IP kubuntu2204 > kubuntu2204: IP truncated-ip - 55 bytes missing! localhost > localhost:  [|eigrp]
 ........
 
+
+Command Case 2:
+sudo python3 netmonx.py scan start --ip-range 192.168.163.129 --technique inverse --spoof-ip 192.168.1.100 --use-fragment --stealth --randomize --legit-traffic
+
+Sent:
+024-12-17 08:42:35,006 - Starting inverse scan on IP range: 192.168.163.129
+2024-12-17 08:42:35,006 - Performing inverse scan...
+2024-12-17 08:42:35,051 - Legitimate UDP packet sent to 192.168.163.129
+2024-12-17 08:42:35,066 - Legitimate UDP packet sent to 192.168.163.129
+2024-12-17 08:42:35,089 - Legitimate TCP packet sent to 192.168.163.129
+
+Output:
+08:43:09.238852 IP 192.168.1.100.ftp-data > kubuntu2204.46692:  [|tcp]
+08:43:09.249626 IP 192.168.1.100 > kubuntu2204: tcp
+08:43:09.261736 IP 192.168.1.100 > kubuntu2204: tcp
+08:43:09.274506 IP kubuntu2204 > kubuntu2204: ICMP echo request, id 0, seq 0, length 8
+08:43:09.288181 IP kubuntu2204.domain > kubuntu2204.domain: domain [length 0 < 12] (invalid)
+08:43:09.306746 IP kubuntu2204.domain > kubuntu2204.domain: domain [length 0 < 12] (invalid)
+08:43:10.348010 IP 192.168.1.100.ftp-data > kubuntu2204.46692: Flags [S.], seq 3603802285, ack 1655656538, win 8192, length 0
+
+
+
 What is this?:
+Spoof IP address realtime, playing with TCP/IP framework
 Encrypts the payload byte-by-byte using the given key (0xAA by default).
 Ensures the payload is obfuscated and harder to analyze by IDS/IPS/NBA.
 Fully randomized and obfuscated to send or receieve payload
